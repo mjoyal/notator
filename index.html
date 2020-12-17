@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Notator</title>
+</head>
+<body class="body">
+  <!--  http://jsfiddle.net/lachlan/FuNmc/ -->
+  <header class='header'>
+    <div class='navigation-bar'>
+      <div id="team-drop-down">
+        <!--<p class="title nav-item" id="care-title" data-shows="care" style="display: none" >Customer Care</p>-->
+        <p class="title nav-item" id="digital-title" data-shows="digital">Digital Support</p>
+        <p class="title nav-item" id="retail-title" data-shows="retail" style="display: none">Retail Support</p>
+        <p class="title nav-item" id="porting-title" data-shows="porting" style="display: none">Porting</p>
+        <div id="team-drop-down-content" class="drop-down">
+          <!--<p class="team-link nav-item" data-shows="care">Customer Care</p>-->
+          <p class="team-link nav-item" data-shows="digital">Digital Support</p>
+          <p class="team-link nav-item" data-shows="retail">Retail Support</p>
+          <p class="team-link nav-item" data-shows="porting">Porting</p>
+        </div>
+      </div>
+
+      <p id="history-nav-item" class="nav-item header-item" data-shows="history">History</p>
+      <div id="theme-drop-down">
+        <p id="theme-nav-item" class="theme-title header-item">Theme</p>
+        <div id="theme-drop-down-content" class="drop-down">
+          <!--<p id="light-theme" class="themes">Lightmode</p>-->
+          <p id="night-theme" class="themes">Nightmode</p>
+          <p id="retro-theme" class="themes">Retro</p>
+          <p id="default-theme" class="themes">Default</p>
+        </div>
+      </div>
+    </div>
+    <div class="navigation-button">
+      <div id="ham-1" class="hamburger-line"></div>
+      <div id="ham-2" class="hamburger-line"></div>
+      <div id="ham-3" class="hamburger-line"></div>
+    </div>
+  </header>
+  <div class="page" id="history-page" style="display: none">
+    <div id="history-description">The new history will stay permanently unless cleared by you! That means if you accidently close the notator or refresh, the history will still be here. This is true as long as you use the same browser and computer and keep the file in the same place. If you open multiple notators and want them to sync their history, just refresh them both. </div>
+    <button class="button" id="history-clear-button">Clear All History</button>
+    <div id="history-section"></div>
+  </div>
+  <div class="page team-page" id="retail-page" style="display: none">
+    <form class="form" id="retail-form">
+      <select class="drop color2" id="retail-form-type-selector">
+        <option value="" disabled selected>Select Form Type</option>
+        <option value='retail-general'>General</option>
+        <option value='retail-buyers-remorse'>Buyers Remorse</option>
+        <option value='retail-collections'>Collections Tag Removal</option>
+        <option value='retail-credit-check'>Credit Check</option>
+        <option value='retail-mytab'>Early MyTab</option>
+        <option value='retail-pre-migration'>Migration to Prepaid</option>
+        <option value='retail-name-correction'>Name Correction</option>
+        <option value='retail-tor'>Transfer of Reponsibility</option>
+      </select>
+      <div class="select-wrapper input color4" id="retail-predefined-multiselect">
+        <p>Notes Predefined Content </p>
+        <p class="select-arrow">&#9662;</p>
+        <div class="options-box" style="display: none">
+          <label class="container">
+            <input class="real-check" type="checkbox" value="Confirmed CX contact details and reset PIN.">
+            <span class="checkmark">PIN Reset</span>
+          </label>
+          <label class="container">
+            <input class="real-check" type="checkbox" value="Informed CX they would lose the remaining time paid for this top up, as the postpaid billing will start today. CX accepted. Migrated line.">
+            <span class="checkmark">Prepaid to Postpaid Migration<span>
+          </label>
+        </div>
+      </div>
+      <input type="text" class="input color3 copy-content retail-item required" id="cfa" placeholder="CFA">
+      <input type="text" class="input color1 copy-content retail-item required" id="store" placeholder="Channel Code">
+      <input type="text" class="input color2 copy-content retail-item number-only required" id="retail-number" placeholder="MSISDN">
+      <select class="drop color4 retail-item required" id="rng-pin">
+        <option value="" disabled selected>RNG?</option>
+        <option value="RNG: YES">Yes</option>
+        <option value="RNG: NO">No</option>
+      </select>
+      <select class="drop color3 retail-item required" id="retail-pin">
+        <option value="" disabled selected>Verified?</option>
+        <option value="Verification: Yes">Yes</option>
+        <option value="Verification: No/Invalid ID">No/Invalid ID</option>
+        <option value="Verification: Account Holder Not Present">Account Holder Not Present</option>
+      </select>
+      <input type="text" class="input color4 copy-content retail-item required" id="retail-name" placeholder="Customer Name">
+      <textarea type="text" class="input color1 retail-item" id="retail-action" placeholder="Action"></textarea>
+      <div class="dynamic-retail-form-section" id="retail-buyers-remorse" style="display: none">
+        <input type="text" class="input color1 retail-item" id="buyers-remorse-device" placeholder="Device">
+        <input type="text" class="input color2 retail-item" id="buyers-remorse-imei" placeholder="IMEI">
+        <input type="text" class="input color3 retail-item" id="buyers-remorse-sales-invoice" placeholder="Sales Invoice">
+        <input type="text" class="input color1 retail-item" id="buyers-remorse-return-invoice" placeholder="Return Invoice">
+        <label> <input type="checkbox" class="retail-item check" value="CFA verifies device is in condition to return under buyer’s remorse.">Checked Device
+          Condition</label>
+      </div>
+      <div class="dynamic-retail-form-section" id="retail-collections" style="display: none">
+        <input type="text" class="input color1 retail-item" id="collections-agency" placeholder="Collections Agency">
+        <input type="text" class="input color3 retail-item" id="collections-owed" placeholder="Amount Owed">
+        <input type="text" class="input color2 retail-item" id="collections-paid" placeholder="Amount Paid">
+        <input type="text" class="input color4 retail-item" id="collections-credited" placeholder="Amount Credited">
+        <input type="text" class="input color1 retail-item" id="collections-date" placeholder="Date Paid">
+        <label> <input type="checkbox" class="retail-item check" value="Past due balance cleared.">Cleared
+          Balance</label>
+        <label> <input type="checkbox" class="retail-item check" value="Third Party Collections Action submitted.">Action Submitted</label>
+      </div>
+      <div class="dynamic-retail-form-section" id="retail-credit-check" style="display: none">
+        <select class="drop color2 retail-item" id="credit-approval">
+          <option value="" disabled selected>Approve or Decline?</option>
+          <option value='Automatic Check: Approved'>Automatic Check - Approved</option>
+          <option value='Automatic Check: Declined'>Automatic Check - Declined</option>
+          <option value='Manual Check: Approved'>Manual Check - Approved</option>
+          <option value='Manual Check: Declined'>Manual Check - Declined</option>
+        </select>
+        <label> <input type="checkbox" class="retail-item check" value="Confirmed CX contact details.">Confirmed Contact
+          Info</label>
+        <label> <input type="checkbox" class="retail-item check" value="CX consents to credit check.">Cx Consents to
+          Credit Check</label>
+
+      </div>
+      <div class="dynamic-retail-form-section" id="retail-mytab" style="display: none">
+        <input type="text" class="input color1 retail-item" id="mytab-imei" placeholder="IMEI">
+        <input type="text" class="input color2 retail-item" id="mytab-remaining" placeholder="Remaining Balance">
+      </div>
+      <div class="dynamic-retail-form-section" id="retail-pre-migration" style="display: none">
+        <select class="drop color2 retail-item" id="pre-migration-status">
+          <option value="" disabled selected>Status?</option>
+          <option value="Migration: Successful">Successful</option>
+          <option value="Migration: Unsuccesful">Unsuccessful</option>
+        </select>
+        <select class="drop color2 retail-item" id="pre-migration-sr">
+          <option value="" disabled selected>SR Ticket?</option>
+          <option value="Submitted SR to fix migration.">SR Submitted</option>
+          <option value="">SR Not Submitted</option>
+        </select>
+        <label>
+          <input type="checkbox" class="retail-item check" value="Informed the CX there is a risk when migrating post to pre. The system may get stuck and will temporarily leave the CX with no service while we wait for an SR to process. Cx accepted.">Cx
+          aware of Prepaid Migration Risk</label>
+      </div>
+      <div class="dynamic-retail-form-section" id="retail-name-correction" style="display: none">
+        <input type="text" class="input color1 retail-item" id="name-correction-id" placeholder="ID Type">
+        <input type="text" class="input color3 retail-item" id="name-correction-before" placeholder="Current Name">
+        <input type="text" class="input color2 retail-item" id="name-correction-after" Placeholder="Correct Name">
+      </div>
+      <div class="dynamic-retail-form-section" id="retail-tor" style="display: none">
+        <input type="text" class="input color1 retail-item" id="tor-number" placeholder="TOR MSISDN">
+        <input type="text" class="input color3 retail-item" id="tor-donor" placeholder="Donor Account #">
+        <input type="text" class="input color2 retail-item" id="tor-recipient" placeholder="Recipient Account #">
+      </div>
+    </form>
+    <div id="retail-messaging-predefined">
+      <div class="category" data-category="retail-greeting">
+        <p>👋 Openings / Closings</p>
+      </div>
+      <div class="contents" id="retail-greeting-content" style="display:none">
+        <textarea readonly class="predefined_sentence">Hi! Can you please provide your name, your store code, the customer's phone number and a brief summary of your issue?</textarea>
+        <textarea readonly class="predefined_sentence">Hi, can I please get your name and channel code?</textarea>
+        <textarea readonly class="predefined_sentence">What ID did you get and what is the birthday on it?</textarea>
+        <textarea readonly class="predefined_sentence">Hi there, just give me a minute while I load the account.</textarea>
+        <textarea readonly class="predefined_sentence">Hello, sorry for the wait, let me read over the info and I will help you out.</textarea>
+        <textarea readonly class="predefined_sentence">What is customer's name and phone number or account number?</textarea>
+        <textarea readonly class="predefined_sentence">How can I help you?</textarea>
+        <textarea readonly class="predefined_sentence">Can you have a code sent out, then I can provide it?</textarea>
+        <textarea readonly class="predefined_sentence">That has been updated now. You may need to close and reload the account to see it.</textarea>
+        <textarea readonly class="predefined_sentence">You're welcome! Have a good one.</textarea>
+      </div>
+      <div class="category" data-category="retail-buyers-remorse">
+        <p>🧾 Buyer's Remorse</p>
+      </div>
+      <div class="contents" id="retail-buyers-remorse-content" style="display:none">
+        <textarea readonly class="predefined_sentence">Are we just returning the device or canceling the service as well? </textarea>
+        <textarea readonly class="predefined_sentence">Has the device been returned in RQ yet?</textarea>
+        <textarea readonly class="predefined_sentence">Can you please send me the RQ sales invoice and return invoice? </textarea>
+        <textarea readonly class="predefined_sentence">If this is an extended Buyer’s remorse, we would require that you have your manager or team lead email retailsupport@freedommobile.ca with the approval and attach the RQ sales and return invoices. </textarea>
+      </div>
+      <div class="category" data-category="retail-updates">
+        <p> ☎️ Contact Info Updates</p>
+      </div>
+      <div class="contents" id="retail-updates-content" style="display:none">
+        <textarea readonly class="predefined_sentence">What is the new email?</textarea>
+        <textarea readonly class="predefined_sentence">What is the new address?</textarea>
+        <textarea readonly class="predefined_sentence">What is the correct spelling of their name?</textarea>
+        <textarea readonly class="predefined_sentence">What is the correct date of birth?</textarea>
+        <textarea readonly class="predefined_sentence">That has been updated now, you may need to refresh the account to see the updates.</textarea>
+      </div>
+      <div class="category" data-category="retail-deposit">
+        <p> 📩 Deposit Account Creation </p>
+      </div>
+      <div class="contents" id="retail-deposit-content" style="display:none">
+        <textarea readonly class="predefined_sentence">What type of deposit would they like to set up, $50, $150 or $300?</textarea>
+        <textarea readonly class="predefined_sentence">Looks like the customer is not eligible for a deposit account.</textarea>
+        <textarea readonly class="predefined_sentence">It looks like the customer has already had a deposit account in the past. Each customer can only have one deposit account. </textarea>
+        <textarea readonly class="predefined_sentence">The deposit account has now been created.</textarea>
+      </div>
+      <div class="category" data-category="retail-migration">
+        <p>⛵ Migration </p>
+      </div>
+      <div class="contents" id="retail-migration-content" style="display:none">
+        <textarea readonly class="predefined_sentence">Would the customer like to change the plan during the migration?</textarea>
+        <textarea readonly class="predefined_sentence">Is the customer aware that sometimes our system errors out during migration to Prepaid, causing the line to be out of commission for a few days?</textarea>
+        <textarea readonly class="predefined_sentence">Can you please confirm you are not in the customer’s account while I migrate it to Prepaid as it can cause errors?</textarea>
+        <textarea readonly class="predefined_sentence">The customer has an overdue balance. We would need to clear that balance before we can migrate to Prepaid.</textarea>
+      </div>
+      <div class="category" data-category="retail-mytab">
+        <p>💸 MyTab - Payoff </p>
+      </div>
+      <div class="contents" id="retail-mytab-content" style="display:none">
+        <textarea readonly class="predefined_sentence">Have we already taken payment for the TAB?</textarea>
+        <textarea readonly class="predefined_sentence">When closing a TAB we do need to take payment for both the TAB balance and any outstanding invoices. </textarea>
+        <textarea readonly class="predefined_sentence">Looks like the payment hasn’t posted yet. What payment method did the customer use?</textarea>
+        <textarea readonly class="predefined_sentence">Okay, the TAB has been cleared now.</textarea>
+      </div>
+      <div class="category" data-category="retail-porting">
+        <p>🛸 Porting </p>
+      </div>
+      <div class="contents" id="retail-porting-content" style="display:none">
+        <textarea readonly class="predefined_sentence">What is the phone number we are porting in and the provider we are porting from?</textarea>
+        <textarea readonly class="predefined_sentence">Do we have the account number, account PIN or IMEI?</textarea>
+        <textarea readonly class="predefined_sentence">Okay, the port has been submitted.</textarea>
+        <textarea readonly class="predefined_sentence">The port has been confirmed by the old service provider.</textarea>
+        <textarea readonly class="predefined_sentence">Looks like that number is outside our coverage area so we aren't able to do the port.</textarea>
+      </div>
+      <div class="category" data-category="retail-promo">
+        <p>🤑 Promotions </p>
+      </div>
+      <div class="contents" id="retail-promo-content" style="display:none">
+        <textarea readonly class="predefined_sentence">What promotion are we adding?</textarea>
+        <textarea readonly class="predefined_sentence">What promotion are we removing?</textarea>
+        <textarea readonly class="predefined_sentence">I got an error that the promotion is not compatible.</textarea>
+        <textarea readonly class="predefined_sentence">One moment while I double-check the SOP.</textarea>
+        <textarea readonly class="predefined_sentence">It looks like the customer is not eligible for that promotion. It is only for new activations and hardware upgrades.</textarea>
+      </div>
+      <div class="category" data-category="retail-plan">
+        <p>🚧 Rate Plan Change </p>
+      </div>
+      <div class="contents" id="retail-plan-content" style="display:none">
+        <textarea readonly class="predefined_sentence">Which phone number are we changing the rate plan on? </textarea>
+        <textarea readonly class="predefined_sentence">Can you confirm the name of the rate plan they would like?</textarea>
+        <textarea readonly class="predefined_sentence">The customer would need to top-up the line for us to change the plan today.</textarea>
+        <textarea readonly class="predefined_sentence">I just got a notification that the customer’s current Mytab will be billed out if we downgrade the plan. The billed amount would be: </textarea>
+      </div>
+      <div class="category" data-category="retail-tor">
+        <p>🤝 Transfer of Responsibility </p>
+      </div>
+      <div class="contents" id="retail-tor-content" style="display:none">
+        <textarea readonly class="predefined_sentence">What is the phone number we will be transferring and the account number we will be transferring this line to? </textarea>
+        <textarea readonly class="predefined_sentence">Can you please confirm the current account holder’s name and the receiving customer’s name?</textarea>
+        <textarea readonly class="predefined_sentence">Will the line remain as Postpaid on the new account?</textarea>
+        <textarea readonly class="predefined_sentence">Will the Line remain as Prepaid on the new account?</textarea>
+        <textarea readonly class="predefined_sentence">The customer currently has a TAB that would need to be paid off before we can transfer the line.</textarea>
+        <textarea readonly class="predefined_sentence">The customer has an invoice they need to pay off before we can transfer the line.</textarea>
+      </div>
+    </div>
+    <div class="area-2" id="retail-area-2">
+      <textarea class="input color4 output-area" id="retail-notes" placeholder="Notes">
+      </textarea>
+    </div>
+    <div class="button-group" id="retail-button-group">
+      <select name="" class="drop panel" id="retail-team-select">
+        <option value="" disabled selected>Select Team</option>
+        <option value="Phone">Phone</option>
+        <option value="Messaging">Messaging</option>
+      </select>
+      <button id="retail-combine" class="button retail-button combine-button">Combine & Copy</button>
+
+      <button class="button retail-button reset-button">Reset</button>
+    </div>
+
+  </div>
+  <div class="page team-page" id="porting-page" style="display: none">
+    <form class="form" id="porting-form">
+      <div class="porting-sub-grid">
+        <input type="text" class="input color4 number-only" id="port-number" placeholder="Port Number">
+        <input type="text" class="input color1 number-only" id="temporary-number" placeholder="Freedom Temporary Number">
+        <select class="drop color2" id="active">
+          <option value="" disabled selected>Active?</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+        <select class="drop color3" id="wire">
+          <option value="" disabled selected>Select Line Type</option>
+          <option value="Wireless">Wireless</option>
+          <option value="Wireline">Wireline</option>
+        </select>
+      </div>
+      <input class="input color1" id="carrier" placeholder="Carrier"></input>
+      <input class="input color2" id="porting-name" placeholder="Name"></input>
+      <input class="input color3" id="address" placeholder="Address"></input>
+      <input class="input color4" id="account-number" placeholder="Account Number"></input>
+    </form>
+    <div class="area-2" id="porting-notes-group">
+      <textarea class="input color1 output-area" id="porting-notes" placeholder="Notes"></textarea>
+    </div>
+    <div class="button-group" id="porting-button-group">
+      <button id="porting-combine" class="button porting-button combine-button">Combine & Copy</button>
+      <button class="button porting-button reset-button">Reset</button>
+    </div>
+  </div>
+  <div class="page team-page" id="care-page">
+    <form action="" class="form" id="care-form">
+      <div class="static-care-form-section">
+        <select class=" drop color3" id="form-type-selector">
+          <option value="" disabled selected>Select Form Type</option>
+          <option value="general">General</option>
+          <option value="promise">Promise to Pay</option>
+          <option value="vacation">Vacation Suspend</option>
+          <option value="loyalty">Loyalty</option>
+          <option value="technical">Tech Support</option>
+        </select>
+        <div class="select-wrapper input color4" id="general-predefined-multiselect">
+          <p>Notes Predefined Content </p>
+          <p class="select-arrow">&#9662;</p>
+          <div class="options-box" style="display: none">
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Edu that calling is only in the USA and back to Canada. Advised that after the data allotment in the package, data is PPU and they need to be aware of their usage. Added the package per cx request.">
+              <span class="checkmark">BGR US </span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Edu that calling is only within the country they are in and back to Canada. Advised that after the data allotment in the package, data is PPU and they need to be aware of their usage.">
+              <span class="checkmark">BGR Int & South</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Had to opt cx out of the CTRC roaming cap. Cx understands that this means there is now no limit to the charges they could incur after the data in their package.">
+              <span class="checkmark">Roaming CAP</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Advised customer that the Phone Protection Plan cannot be added back on and they will no longer be covered for any damages. Cx understands and I canceled the phone protection plan. Advised cancellation is effective immediately.">
+              <span class="checkmark">Phone Protection Plan</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Advised cx that they don't qualify for another PTP as they broke one in the last 3 months. Advised cx that the full overdue balance on the account is needed to reactivate the account.">
+              <span class="checkmark">PTP Denied</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Advised I cannot give a Promise to Pay as they are suspended due to exceeding their Credit Limit. Adv they need to pay down their balance to 70% of their Credit Limit.">
+              <span class="checkmark">Credit Limit</span>
+            </label>
+          </div>
+        </div>
+        <div class="select-wrapper input color4" id="promise-predefined-multiselect" style="display: none">
+          <p>Notes Predefined Content </p>
+          <p class="select-arrow">&#9662;</p>
+          <div class="options-box" style="display: none">
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Customer aware that bank transfers will take 3-5 business days.">
+              <span class="checkmark">Bank Payment Education</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Customer knows that cash payments take 24 hours.">
+              <span class="checkmark">Cash Payment Education</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Customer knows if the promise is broken they will not be able to make another for 90 days.">
+              <span class="checkmark">Broken Promise Education</span>
+            </label>
+          </div>
+        </div>
+        <div class="select-wrapper input color4" id="vacation-predefined-multiselect" style="display: none">
+          <p>Notes Predefined Content </p>
+          <p class="select-arrow">&#9662;</p>
+          <div class="options-box" style="display: none">
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Customer is aware there are no refunds under any circumstances. ">
+              <span class="checkmark">Refund Policy Education</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Customer is aware they are responsible for any charges generated during their vacation period and the next invoice is still due 14 days after it generates.">
+              <span class="checkmark">Vacation Billing Education</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Customer is aware that call forwarding and voicemail will NOT function during the suspension period.">
+              <span class="checkmark">VM & Call Forwarding Education</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="I have checked the customer's email is correct so they can receive suspension notifications.">
+              <span class="checkmark">Validated Customer's Email</span>
+            </label>
+          </div>
+        </div>
+        <div class="select-wrapper input color4" id="loyalty-predefined-multiselect" style="display: none">
+          <p>Notes Predefined Content </p>
+          <p class="select-arrow">&#9662;</p>
+          <div class="options-box" style="display: none">
+            <label class="container">
+              <input class="real-check" type="checkbox" value="I explained the line will be canceled effective immediately and the number will be lost. Edu cx that this action cannot be reversed.">
+              <span class="checkmark">Cancellation is immediate & number will be lost</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Customer knows that the final bill will be prorated to the day that the line is canceled.">
+              <span class="checkmark">Final Bill Proration</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Customer knows that the line will cancel upon port-out.">
+              <span class="checkmark">Port-Out Cancellation</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Cx knows that their remaining MyTab balance will be billed onto their final invoice.">
+              <span class="checkmark">MyTab Bill Out</span>
+            </label>
+          </div>
+        </div>
+        <div class="select-wrapper input color4" id="technical-predefined-multiselect" style="display: none">
+          <p>Notes Predefined Content </p>
+          <p class="select-arrow">&#9662;</p>
+          <div class="options-box" style="display: none">
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Checked that Data is not Throttled. ">
+              <span class="checkmark">Not Throttled</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Confirmed that data and/or data roaming are enabled on customer's device.">
+              <span class="checkmark">Data & Data Roaming</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Deleted feature and readded it.">
+              <span class="checkmark">Reset Feature</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Advised cx to perform a Network Reset./Cx has already Reset Network Settings">
+              <span class="checkmark">Network Reset</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Advised cx to Power Cycle the phone./Cx has powercycled.">
+              <span class="checkmark">Power Cycle</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Advised cx to text Setup to 41111 to update APN settings. ">
+              <span class="checkmark">Setup 41111</span>
+            </label>
+            <label class="container">
+              <input class="real-check" type="checkbox" value="Advised cx to text SIM to 40001 to update SIM card. ">
+              <span class="checkmark">SIM 40001</span>
+            </label>
+          </div>
+        </div>
+        <input type="text" class="input color2 required" id="name" placeholder="Name">
+        <input type="text" class="input color1 only-for-digital" id="conversation-id" placeholder="Conversation ID">
+        <div class="sub-static-care-form-section">
+          <input class="input color1 required number-only" id="number" placeholder="Number">
+          <button type="button" class="button" id="number-copy-button">Copy</button>
+          <select class="drop color3 required" id="pin">
+            <option value="" disabled selected>Verified?</option>
+            <option value="Verification: Passed">Passed</option>
+            <option value="Verification: Failed">Failed</option>
+            <option value="Verification: Unauthorized User">Unauthorized User</option>
+            <option value="Verification: N/A">N/A</option>
+            <option value="Two Factor Verified: Add/Edit Secondary User">2FA: Add/Edit 2nd User</option>
+            <option value="Two Factor Verified: Address Update">2FA: Address Update</option>
+            <option value="Two Factor Verified: Call Back">2FA: Call Back</option>
+            <option value="Two Factor Verified: Email Update">2FA: Email Update</option>
+            <option value="Two Factor Verified: HUG">2FA: HUG</option>
+            <option value="Two Factor Verified: Migration">2FA: Migration</option>
+            <option value="Two Factor Verified: MSISDN Swap">2FA: MSISDN Swap</option>
+            <option value="Two Factor Verified: Pin Update">2FA: Pin Update</option>
+            <option value="Two Factor Verified: Port-in Request">2FA: Port-in Request</option>
+          </select>
+        </div>
+      </div>
+      <div class="dynamic-care-form-section" id="general">
+        <textarea class="input color4" id="problem" placeholder="Problem"></textarea>
+        <textarea class="input comment color2" id="action" placeholder="Action"></textarea>
+      </div>
+      <div class="dynamic-care-form-section" id="promise" style="display: none">
+        <input class="input color3 required" id="ptp-amount" placeholder="Amount">
+        <select class="drop color1" id="ptp-method">
+          <option value="" disabled selected>Method?</option>
+          <option value="Customer Care">Customer Care</option>
+          <option value="My Account">My Account</option>
+          <option value="Retail">Retail</option>
+          <option value="Bank">Bank</option>
+          <option value="N/A">N/A</option>
+        </select>
+        <input class="input color4" id="broken-promise" placeholder="Last Broken PTP">
+        <textarea class="input comment color2" id="ptp-action" placeholder="Action"></textarea>
+      </div>
+      <div class="dynamic-care-form-section" id="vacation" style="display: none">
+        <select class="drop color3 required" id="vacation-duration">
+          <option value="" disabled selected>Duration</option>
+          <option value="1">One Month</option>
+          <option value="2">Two Months</option>
+          <option value="3">Three Months</option>
+          <option value="4">Four Months</option>
+          <option value="5">Five Months</option>
+          <option value="6">Six Months</option>
+        </select>
+        <select class="drop color1 required" id="start-month">
+          <option value="" disabled selected>Start Month</option>
+          <option value="0">January</option>
+          <option value="1">February</option>
+          <option value="2">March</option>
+          <option value="3">April</option>
+          <option value="4">May</option>
+          <option value="5">June</option>
+          <option value="6">July</option>
+          <option value="7">August</option>
+          <option value="8">September</option>
+          <option value="9">October</option>
+          <option value="10">November</option>
+          <option value="11">December</option>
+        </select>
+        <select class="drop color4 required" id="bill-cycle">
+          <option value="" disabled selected>Bill Cycle</option>
+          <option value="05">5th</option>
+          <option value="10">10th</option>
+          <option value="15">15th</option>
+          <option value="20">20th</option>
+          <option value="25">25th</option>
+        </select>
+        <textarea class="input comment color2" id="vacation-action" placeholder="Action"></textarea>
+      </div>
+      <div class="dynamic-care-form-section" id="loyalty" style="display: none">
+        <select class="drop color4 required" id="cancel-reason">
+          <option value="" disabled selected>Cancellation Reason</option>
+          <option value="Network Service Issues">Network Service Issues</option>
+          <option value="Insufficient Coverage Area">Insufficient Coverage Area</option>
+          <option value="Poor Customer Service">Poor Customer Service</option>
+          <option value="Unexpected PPU Charges">Unexpected PPU Charges</option>
+          <option value="Promotion Ended">Promotion Ended</option>
+          <option value="Competitor Offer">Competitor Offer</option>
+          <option value="Moving out of Country">Moving out of Country</option>
+          <option value="Moving out of Service Area">Moving out of Service Area</option>
+          <option value="Refused to Provide Reason">Refused to Provide Reason</option>
+          <option value="Other (please note)">Other (please note)</option>
+        </select>
+        <select class="drop color2" id="offer-options">
+          <option value="" disabled selected>Offer</option>
+          <option value="Accepted"> Accepted </option>
+          <option value="Declined"> Declined </option>
+          <option value="No offer was extended"> No Offer </option>
+          <option value="Cancellation was unavoidable"> Unavoidable </option>
+        </select>
+        <input class="input color3" id="offer-details" placeholder="Include any offers made here">
+        <textarea class="input comment color4" id="loyalty-action" placeholder="Action"></textarea>
+        <div id="loyalty-sub-grid">
+          <select class="drop color3 required" id="bill-month">
+            <option value="" disabled selected>Final Bill Month</option>
+            <option value="Jan">January</option>
+            <option value="Feb">February</option>
+            <option value="Mar">March</option>
+            <option value="Apr">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="Aug">August</option>
+            <option value="Sep">September</option>
+            <option value="Oct">October</option>
+            <option value="Nov">November</option>
+            <option value="Dec">December</option>
+          </select>
+          <select class="drop color1 required" id="final-cycle">
+            <option value="" disabled selected>Final Bill Date</option>
+            <option value="5th">5th</option>
+            <option value="10th">10th</option>
+            <option value="15th">15th</option>
+            <option value="20th">20th</option>
+            <option value="25th">25th</option>
+          </select>
+          <input class="input color2" id="my-tab" placeholder="MyTab Balance">
+        </div>
+
+      </div>
+      <div class="dynamic-care-form-section" id="technical" style="display: none">
+        <textarea class="input color2 required" id="tech-problem" placeholder="Problem"></textarea>
+        <textarea class="input comment color1 required" id="tech-action" placeholder="Action"></textarea>
+        <select class="drop color3" id="software">
+          <option value="" disabled selected>Software Updated?</option>
+          <option value="y"> Yes </option>
+          <option value="n"> No </option>
+          <option value=> N/A </option>
+        </select>
+        <select class="drop color4" id="sim">
+          <option value="" disabled selected>SIM updated?</option>
+          <option value="y"> Yes </option>
+          <option value="n"> No </option>
+          <option value=> N/A </option>
+        </select>
+      </div>
+    </form>
+    <div id="care-notes-group" class="area-2">
+      <textarea class="input color1 output-area" id="care-notes" placeholder="Notes"></textarea>
+    </div>
+    <div id="care-button-group" class="button-group">
+      <div class="panel-left">
+        <select class="drop required panel only-for-digital" id="team">
+          <option value="" disabled selected>Select Team</option>
+          <option value="Messaging">Messaging</option>
+          <option value="Phone">Phone</option>
+          <option value="Twitter">Twitter</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Email">Email</option>
+        </select>
+        <select class="drop panel" id="tags">
+          <option value="" disabled selected>Select Tags</option>
+          <option value="**** Address Change ****">Address Change</option>
+          <option value="**** Customer Failed Verification, Sent to Retail with ID ****">Failed Verification</option>
+          <option value="**** No More Promotions ****">No More Promos</option>
+          <option value="**** Outage Compensation ****">Outage Compensation</option>
+          <option value="**** Promotion or Credit Applied ****">Promotion or Credit Applied</option>
+          <option value="**** Promise to Pay Denied ****">PTP Denied</option>
+          <option value="**** Rate Plan Change ****">Rate Plan Change</option>
+          <option value="**** Roaming Conversation****">Roaming</option>
+          <option value="**** Unauthorized User ****">Unauthorized User</option>
+          <option value="">No Tag</option>
+        </select>
+        <button id="care-combine" class="button combine-button panel">Combine & Copy</button>
+      </div>
+      <button class="button care-button reset-button">Reset</button>
+    </div>
+    <div class="page team-page only-for-digital" id="digital-page">
+      <div class="category" data-category="personal">
+        <p>🔨 DIY Predefined</p>
+      </div>
+      <div class="contents" id="personal-content" style="display: none">
+        <form action="" id="personal-create-form">
+          <textarea class="input color4" id="add-content" placeholder="Add your own messaging content here..."></textarea>
+          <button class="button" id="add-content-button">Add</button>
+        </form>
+        <form action="" id="personal-content-form">
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-0" data-key="0" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="0">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-1" data-key="1" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="1">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-2" data-key="2" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="2">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-3" data-key="3" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="3">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-4" data-key="4" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="4">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-5" data-key="5" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="5">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-6" data-key="6" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="6">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-7" data-key="7" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="7">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-8" data-key="8" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="8">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-9" data-key="9" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="9">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-10" data-key="10" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="10">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-11" data-key="11" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="11">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-12" data-key="12" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="12">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-13" data-key="13" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="13">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-14" data-key="14" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="14">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-15" data-key="15" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="15">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-16" data-key="16" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="16">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-17" data-key="17" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="17">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-18" data-key="18" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="18">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-19" data-key="19" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="19">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-20" data-key="20" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="20">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-21" data-key="21" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="21">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-22" data-key="22" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="22">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-23" data-key="23" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="23">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-24" data-key="24" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="24">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-25" data-key="25" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="25">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-26" data-key="26" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="26">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-27" data-key="27" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="27">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-28" data-key="28" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="28">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-29" data-key="29" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="29">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-30" data-key="30" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="30">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-31" data-key="31" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="31">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-32" data-key="32" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="32">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-33" data-key="33" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="33">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-34" data-key="34" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="34">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-35" data-key="35" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="35">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-36" data-key="36" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="36">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-37" data-key="37" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="37">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-38" data-key="38" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="38">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-39" data-key="39" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="39">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-40" data-key="40" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="40">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-41" data-key="41" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="41">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-42" data-key="42" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="42">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-43" data-key="43" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="43">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-44" data-key="44" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="44">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-45" data-key="45" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="45">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-46" data-key="46" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="46">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-47" data-key="47" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="47">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-48" data-key="48" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="48">Delete</button></div>
+          <div class="personal-item-container" style="display: none"><textarea id="personal-predefined-49" data-key="49" class="personal_item predefined_sentence" readonly></textarea>
+            <button class="delete button" data-button="49">Delete</button></div>
+        </form>
+      </div>
+
+      <div class="category" data-category="greeting">
+        <p>👋 Greeting & Closings </p>
+      </div>
+      <div class="contents" id="greeting-content" style="display:none">
+        <textarea readonly class="predefined_sentence">Hey, thanks for messaging into Freedom Mobile. How can I help you today?</textarea>
+        <textarea readonly class="predefined_sentence">Hey there, thanks for messaging into Freedom Mobile.</textarea>
+        <textarea readonly class="predefined_sentence">Hi there! How can I help you today?</textarea>
+        <textarea readonly class="predefined_sentence">Hey there, how are you today?</textarea>
+        <textarea readonly class="predefined_sentence">You are very welcome. Have a lovely day. 😊 </textarea>
+        <textarea readonly class="predefined_sentence">Feel free to message again anytime if you have any more questions or concerns. Have a great day! </textarea>
+        <textarea readonly class="predefined_sentence">If there isn't anything else, have a lovely day! Feel free to message in at any time. 😊  </textarea>
+        <textarea readonly class="predefined_sentence">You are very welcome. Have a great rest of your night!</textarea>
+        <textarea readonly class="predefined_sentence">Feel free to message in at any time and have a great rest of your night!</textarea>
+      </div>
+      <div class="category" data-category="verification">
+        <p>🔒 Verification</p>
+      </div>
+
+      <div class="contents" id="verification-content" style="display:none">
+        <textarea readonly class="predefined_sentence">I am going to send you a secure form for you to fill out for me to access your account.  </textarea>
+        <textarea readonly class="predefined_sentence">I can absolutely look into that for you. I am going to send you a secure form for you to fill out for me to access your account.</textarea>
+        <textarea readonly class="predefined_sentence">If you don't know your PIN, don't worry, just put your best guess and we can go from there. </textarea>
+        <textarea readonly class="predefined_sentence">It looks like we have a different PIN on the account, I will send another verification form to you so you can have another guess.</textarea>
+        <textarea readonly class="predefined_sentence">I'm going to send you a 6 digit security code via Text Message or Email. Which would you prefer?  </textarea>
+        <textarea readonly class="predefined_sentence">Okay, I sent the verification code. Just send me the code and we can proceed. </textarea>
+        <textarea readonly class="predefined_sentence">I am going to send you a PIN Reset Form, where you will enter your requested PIN. For your security,  your PIN cannot be: Sequential (eg. 1234), 4 of the same number (eg. 3333), or the last 4 digits of your phone number. Please do not send the PIN outside of the secure form and please do not share your PIN with anyone. </textarea>
+        <textarea readonly class="predefined_sentence">I have updated the PIN now. Please wait 5-10 minutes before using the PIN on your My Account.</textarea>
+        <textarea readonly class="predefined_sentence">Please avoid sending any sensitive information outside the secure forms (eg. PINs or Credit Card information), we want to protect your information.</textarea>
+        <textarea readonly class="predefined_sentence">Let me know if you would like to update your PIN. Since you sent it outside the form, it is now in our messaging records.</textarea>
+        <textarea readonly class="predefined_sentence">Thank you, your name is not on this account as an authorized user. I will be unable to provide any account information, I recommend having the account holder contact us and add you as an authorized user. </textarea>
+        <textarea readonly class="predefined_sentence">I am going to send you a secure form to enter your Credit Card or Visa Debit details. Please avoid sending any information outside the form.</textarea>
+
+      </div>
+
+      <div class="category" data-category="general">
+        <p>🧰 General</p>
+      </div>
+
+      <div class="contents" id="general-content" style="display:none">
+
+        <textarea readonly class="predefined_sentence">This is a messaging service, so I don't have the ability to call you. However, I would be happy to help you through this platform.   </textarea>
+        <textarea readonly class="predefined_sentence">Don't worry, I'm still here. This is a messaging service and replies can take up to 10 minutes as any agent can be working with over 10 conversations at a time. I truly appreciate your patience and I apologize for any frustration this may cause. </textarea>
+        <textarea readonly class="predefined_sentence">You can give us a call at 611 from your Freedom Mobile device or 1-877-946-3184. We will be happy to help you. </textarea>
+        <textarea readonly class="predefined_sentence">If you are looking to cancel a line, you can cancel by calling us at 611 from your Freedom Mobile device or 1-877-946-3184. We will be happy to help you. </textarea>
+        <textarea readonly class="predefined_sentence">You could reach out to our Loyalty department, however, I cannot guarantee they will have anything available to them. </textarea>
+        <textarea readonly class="predefined_sentence">Freedom Mobile has two networks. We have one where we own our towers, the Freedom Zone, and one where we lease the towers from other companies, the Nationwide Zone. All of our plans split between these zones. In our older ones, pay-per-use rates may apply, in our newer ones there are no extra fees and unlimited calling and texting are included. The only difference between Nationwide and Freedom zones in our new plans is the amount of data included in each zone. </textarea>
+        <textarea readonly class="predefined_sentence">Spam calls are an issue that heavily affects all services providers and we understand they are quite a nuisance. There isn't currently technology that will block spam calls. However, you can look into 3rd Party Apps that block country codes. </textarea>
+
+      </div>
+
+      <div class="category" data-category="policy">
+        <p>📝 Policy</p>
+      </div>
+
+      <div class="contents" id="policy-content" style="display:none">
+
+        <textarea readonly class="predefined_sentence">That is called a Transfer of Responsibility. In order to do that, the account holder and person who they are transferring to need to go in-store together with 2 pieces of Government Issued ID. If there is a MyTab attached to that line, it will need to be paid in full. Does that make sense?  </textarea>
+        <textarea readonly class="predefined_sentence">It looks like you do receive a fair bit of promotions on your account, that's awesome! We love to reward our customers for being with us. At this time, you aren't eligible for any further promotions. However, you are always eligible for new promotions if you do a Hardware Upgrade or activate a new line.   </textarea>
+        <textarea readonly class="predefined_sentence">If the line doesn't have a MyTab, we have an option called 'Vacation Suspend' that allows you to put your services on hold without payment for up to 6 months. The charges are $15 per month of suspension. </textarea>
+        <textarea readonly class="predefined_sentence">It looks like you are suspended due to exceeding your account's Credit Limit. The Credit Limit is in place to protect you from incurring significant charges by accident, so we shut off services when the limit is exceeded. In order to reactivate the line, you need to get your account balance to below 70% of that Credit Limit. </textarea>
+        <textarea readonly class="predefined_sentence"> </textarea>
+
+      </div>
+
+      <div class="category" data-category="empathy">
+        <p>💌 Empathy</p>
+      </div>
+
+      <div class="contents" id="empathy-content" style="display:none">
+        <textarea readonly class="predefined_sentence">I can see you are looking to get a new phone, that's exciting! Do you have a specific device in mind? </textarea>
+        <textarea readonly class="predefined_sentence">I can see you are having some issues with your services, I'm sorry to hear that. </textarea>
+        <textarea readonly class="predefined_sentence">I definitely understand. If I were in your shoes, I would feel the same way.</textarea>
+        <textarea readonly class="predefined_sentence">I can see you are looking to start services with us, we are excited to have you! </textarea>
+        <textarea readonly class="predefined_sentence">I'm so sorry to hear about your phone!  I can suspend the service on the SIM card so no one will be able to use it and/or blacklist the device so it can't be used in North America. </textarea>
+        <textarea readonly class="predefined_sentence">I can see you are looking to cancel. We will be sorry to see you go!</textarea>
+      </div>
+
+      <div class="category" data-category="tech">
+        <p>⚙️ Tech Support</p>
+      </div>
+
+      <div class="contents" id="tech-content" style="display:none">
+
+        <textarea readonly class="predefined_sentence">Can you please check what software version you are running? This can be done by going into Settings > General > Software Version. </textarea>
+        <textarea readonly class="predefined_sentence">I would recommend updating your software to the latest version. This can be done on the 'General' page.</textarea>
+        <textarea readonly class="predefined_sentence">We can definitely look at compensation when the issue has been resolved. We want to make sure the compensation reflects the full amount of time that your services were disrupted.</textarea>
+        <textarea readonly class="predefined_sentence">It seems like this isn't an issue I can resolve over messaging. I'll need to ask you to call in for Level 2 technical support at 611 from your Freedom Phone or 1-877-946-3184 from another phone.</textarea>
+        <textarea readonly class="resources">Network Reset - iPhone</textarea>
+        <textarea readonly class="resources">VoLTE OFF - iPhone</textarea>
+        <textarea readonly class="resources">Network Reset - Samsung</textarea>
+        <textarea readonly class="resources">VoLTE OFF - Samsung</textarea>
+        <textarea readonly class="resources">Network Reset - Google Pixel</textarea>
+        <textarea readonly class="resources">VoLTE OFF - Google Pixel</textarea>
+
+      </div>
+
+      <div class="category" data-category="ptp">
+        <p>📆 Promise to Pay</p>
+      </div>
+
+      <div class="contents" id="ptp-content" style="display:none">
+        <textarea readonly class="predefined_sentence">The extension is called a Promise to Pay. The payment arrangement will be for the full balance on the account and will be due in exactly 7 days.  </textarea>
+        <textarea readonly class="predefined_sentence">You will want to avoid making a bank payment as it will take 3-5 business days to process. Credit Card or Visa Debit online or Debit in-store are all instant. </textarea>
+        <textarea readonly class="predefined_sentence">If the payment has not reached us within the 7 days then you will not be able to make another Promise to Pay for 90 days. </textarea>
+        <textarea readonly class="predefined_sentence">Okay, I have setup the Promise to Pay for you, due in one week. Your phone will be active in the next 5 minutes. If not, restart your phone.</textarea>
+
+      </div>
+
+      <div class="category" data-category="roaming">
+        <p>🌎 Roaming</p>
+      </div>
+      <div class="contents" id="roaming-content" style="display:none">
+        <textarea readonly class="predefined_sentence">The Big Gig Roam USA packages include Unlimited Calling in the USA and back to Canada. They also include Unlimited Global Texting. The amount of data depends on the number of days you purchase. The packages we offer are 2 days for $10 with 150MB, 5 days for $25 with 1GB, 10 days for $50 with 3GB and 20 days for $100 with 10GB. We also have two 30 day packages and a 90 package. The packages are: 30 days 1GB for $40, 30 days 2GB for $50, and 90 days 3GB for $90.</textarea>
+        <textarea readonly class="predefined_sentence">Before I add the package, I want to let you know that calling is only in the USA and back to Canada. Further, after the Data allotment in the package is used, Data is $0.20/MB. We will send you text message updates to let you know where you are at with your usage.  </textarea>
+        <textarea readonly class="predefined_sentence">Without a package, you would be charged USA standard roaming rates. The rates are $0.50/min, $0.20/MB of data, and $0.20/text.   </textarea>
+        <textarea readonly class="predefined_sentence">The Big Gig Roam South packages include Unlimited Calling in the country you are in and back to Canada. They also include Unlimited Global Texting. We offer two packages: 8 days with 1GB of data for $48 or 16 days with 2GB for $96. After the data is used in the package the charges are Pay-Per-use per MB so please watch out for our text messages to let you know where you are with your usage.</textarea>
+        <textarea readonly class="predefined_sentence">The Big Gig Roam International packages include Unlimited Calling in the country you are in and back to Canada. They also include Unlimited Global Texting. We offer two packages: 8 days with 1GB of data for $80 or 16 days with 2GB for $160. After the data is used in the package the charges are Pay-Per-use per MB so please watch out for our text messages to let you know where you are with your usage.</textarea>
+        <textarea readonly class="predefined_sentence">Without a package, you would be charged USA standard roaming rates. The rates are $0.50/min, $0.20/MB of data, and $0.20/text.   </textarea>
+        <textarea readonly class="predefined_sentence">I need to opt you out of the CRTC Roaming Cap to add this package. This means there would be no limit to the charges you might incur after the data is used in your package. You will need to be aware of how much data you are consuming. Do you agree to remove the roaming cap of your account? It will be re-added on your next bill cycle date.   </textarea>
+      </div>
+
+      <div class="category" data-category="hugs">
+        <p>📱 Hardware Upgrades</p>
+      </div>
+
+      <div class="contents" id="hugs-content" style="display:none">
+        <textarea readonly class="predefined_sentence">We will need to do a credit check in-store to determine if you qualify for a phone with us.  Head in-store with 2 pieces of ID and a credit card and we will be happy to help you.</textarea>
+        <textarea readonly class="predefined_sentence">The online "Not Eligible for Upgrade" message will come up if you currently have a MyTab, if your account is less than 12 months old, if you currently have a balance on the account, if you don't have Auto Pay activated, or if you've had a late payment in the past 4 months. You'll still be able to do an upgrade in store regardless.</textarea>
+      </div>
+
+      <div class="category" data-category="selfserve">
+        <p>🎣 Self-Serve</p>
+      </div>
+
+      <div class="contents" id="selfserve-content" style="display:none">
+        <textarea readonly class="predefined_sentence">To add the Digital Discount, Auto-Pay must first be setup. To add the digital discount go to "Manage Plans & Add-ons > Scroll down to the bottom, click "Redeem Promo Code" and enter 'Digital Discount."  </textarea>
+        <textarea readonly class="predefined_sentence">You can reset your voicemail password by logging into your My Account > Plans & Add ons > Other services > Reset voicemail password.  </textarea>
+        <textarea readonly class="predefined_sentence">You can view your most recent invoice by logging into your My Account under the main page, select "Download Bill" which will reflect a breakdown of your monthly charges.  </textarea>
+        <textarea readonly class="predefined_sentence">You can view your remaining My Tab Balance through your My Account by logging in and going to Billing details. On the bottom left you will see your remaining MyTab Balance and the number of months remaining until your 24-month agreement has ended.  </textarea>
+        <textarea readonly class="predefined_sentence">Once you have logged in, you will want to click "View Billing Details." Then, on the right underneath "Manage Billing," you will see "Update Auto-Pay Settings." Click this and then on the next page click the big orange button that says "Update Card." </textarea>
+        <textarea readonly class="predefined_sentence">On the top right you will see a number that starts with "DBC", that is your account number. </textarea>
+      </div>
+
+      <div class="category" data-category="addons">
+        <p>🍟 Add-Ons</p>
+      </div>
+
+      <div class="contents" id="addons-content" style="display:none">
+        <textarea readonly class="predefined_sentence">I can definitely help you remove your Phone Protection Plan, I just want to let you know that once we cancel the Phone Protection Plan it can never be added back on. After it is removed your phone will no longer be covered for any damages.  </textarea>
+        <textarea readonly class="predefined_sentence"> The World Traveller is a rate reduction Add-on. It costs $8 per month and will reduce regular roaming rates to half of what they are normally. For example, in the USA, calling is $0.50/min. With the World Traveller, calling is $0.25/min. This Add-on is best if you are not going to use data as Pay-Per-Use Data is very expensive in other countries. If you would like to check the rates of a specific country head to freedommobile.ca click Coverage > Network Coverage > International Roaming.  </textarea>
+        <textarea readonly class="predefined_sentence">The World Saver Add-On reduces international long-distance rates in over 200 countries from within Freedom and Nationwide coverage areas. These rates can be found for each country on the Freedom Mobile website. These rates do not apply outside of Canada.   </textarea>
+      </div>
+
+      <div class="category" data-category="links">
+        <p>🔗 Links</p>
+      </div>
+
+      <div class="contents" id="links-content" style="display:none">
+
+        <textarea readonly class="predefined_sentence">Here is the link to our coverage map: https://www.freedommobile.ca/en-CA/network-coverage </textarea>
+        <textarea readonly class="predefined_sentence">Here is the link for express payments, you will not need to login: https://myaccount.freedommobile.ca/express-payments </textarea>
+        <textarea readonly class="predefined_sentence">Here is the link to our find our stores: https://locations.freedommobile.ca/ </textarea>
+        <textarea readonly class="predefined_sentence">Here is the link to all of our available devices: https://shop.freedommobile.ca/devices </textarea>
+        <textarea readonly class="predefined_sentence">Here is the link to all of our available plans: https://www.freedommobile.ca/en-CA/plans </textarea>
+        <textarea readonly class="predefined_sentence">Here is the link to our roaming options: https://www.freedommobile.ca/en-CA/network-coverage/international-roaming </textarea>
+
+      </div>
+
+      <div class="category" data-category="resources">
+        <p>🎒 Resources</p>
+      </div>
+
+      <div class="contents" id="resources-content" style="display:none">
+        <textarea readonly class="resources">Porting Number</textarea>
+        <textarea readonly class="resources">Help Desk</textarea>
+        <textarea readonly class="resources">Unlock Code Unavailable Template</textarea>
+        <textarea readonly class="resources">Unlock Account Number</textarea>
+        <textarea readonly class="resources">Payment Investigation Template</textarea>
+        <textarea readonly class="resources">Follow Up Shipping Tracking Template</textarea>
+        <textarea readonly class="resources">Unlock Code Unavailable Template</textarea>
+        1-866-781-4944
+      </div>
+
+      <div class="category" data-category="internet">
+        <p>🌐 Freedom Home Internet</p>
+      </div>
+
+      <div class="contents" id="internet-content" style="display:none">
+        <textarea readonly class="predefined_sentence">Hey, thanks for messaging into Freedom Home Internet Support. How can I help you today? </textarea>
+        <textarea readonly class="predefined_sentence">Hey, thanks for messaging into Freedom Home Internet Support.</textarea>
+        <textarea readonly class="predefined_sentence">We love that you are interested. We don't have the infrastructure to service this area, though. We currently offer this service in Alberta and British Columbia. </textarea>
+        <textarea readonly class="predefined_sentence">Your PIN is not the same as your Freedom Mobile PIN. Your PIN will automatically be generated as the last four digits of the Freedom Modem.</textarea>
+        <textarea readonly class="predefined_sentence">To be eligible for Freedom Home Internet, you need to be a Freedom Mobile Postpaid customer with a plan above $40/month. You will also need to be on Auto-Pay for your monthly payments.</textarea>
+        <textarea readonly class="predefined_sentence">You must be the account holder to sign up for our Freedom Home Internet. You can perform a Transfer of Responsibility and get your own Freedom Mobile account, then you can sign up for our Home Internet Product. </textarea>
+        <textarea readonly class="predefined_sentence">This is part of the design of a high-value price point. For us to offer this level of product value, all of our customers must use Auto-Pay.</textarea>
+        <textarea readonly class="predefined_sentence">Shaw Communications is the parent company of Freedom, our payment system for Home Internet service does use the Shaw naming convention. </textarea>
+        <textarea readonly class="predefined_sentence">We are offering Home Internet as a benefit to Freedom Mobile wireless customers who meet the product eligibility requirements. For quick reference, these can be found on our website.   </textarea>
+
+      </div>
+    </div>
+
+  </div>
+  <div class="twitter-overlay">
+    <p class="close-twitter">X</p>
+    <a class="twitter-timeline" data-theme="dark" data-chrome="transparent" href="https://twitter.com/FreedomMobile?ref_src=twsrc%5Etfw">Tweets by FreedomMobile</a>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </div>
+</body>
+</html>
